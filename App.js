@@ -7,13 +7,12 @@ import { createStackNavigator } from 'react-navigation-stack'
 
 import Screen from './src/components/Screen'; 
 
-import DetailScreen from './src/components/DetailScreen'; 
 
 import AddItemsScreen from './src/components/AddItemsScreen'; 
 
 import EditItemsScreen from './src/components/EditItemsScreen'; 
 
-  
+import UpdateItemsScreen from './src/components/UpdateItemsScreen'
 
 const RootStack = createStackNavigator( 
 
@@ -22,10 +21,6 @@ const RootStack = createStackNavigator(
     Screen: {
       screen: Screen
     },
-
-    DetailScreen: {
-      screen: DetailScreen
-    }, 
     
     AddItemsScreen: {
       screen: AddItemsScreen
@@ -33,6 +28,9 @@ const RootStack = createStackNavigator(
     EditItemsScreen:{
       screen: EditItemsScreen
     }, 
+    UpdateItemsScreen:{
+      screen: UpdateItemsScreen
+    },
   }, 
 
   { 

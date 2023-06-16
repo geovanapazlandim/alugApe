@@ -1,59 +1,153 @@
-import React, { Component } from 'react'; 
+import React, { Component } from 'react';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import firebase from "../service/connectionFirebase";
 
-import { Button, View, Text } from 'react-native'; 
 
- 
- 
 
-class AddItemsScreen extends Component { 
+export default class AddItemsScreen extends Component {
+  
+  static navigationOptions = {
+    title: 'AlugApê - Adicionar Itens',
+  };
 
-  static navigationOptions = { 
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: [],
+      anunciante: '',
+      cidade: '',
+      descricao: '',
+      imovel: '',
+      localizacao: '',
+      tipoImovel: '',
+      valor: '',
+    };
+  }
 
-    title: 'Adicionar Itens', 
+  componentDidMount() {
+    this.fetchData();
+  }
 
-  }; 
+  fetchData = async () => {
+    try {
+      const snapshot = await firebase.firestore().collection('imovelAluguel').get();
+      const items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      this.setState({ data: items });
+    } catch (error) {
+      console.log('Erro ao obter dados:', error);
+    }
+  };
 
-  render() { 
+  criarItem = async () => {
+    const {
+      anunciante,
+      cidade,
+      descricao,
+      imovel,
+      localizacao,
+      tipoImovel,
+      valor,
+    } = this.state;
 
-    return ( 
+    try {
+      await firebase.firestore().collection('imovelAluguel').add({
+        anunciante,
+        cidade,
+        descricao,
+        imovel,
+        localizacao,
+        tipoImovel,
+        valor,
+      });
+      alert('Item criado com sucesso!');
+    } catch (error) {
+      alert('Erro ao criar item:', error);
+    }
+  };
 
-      <View style={{ flex: 1, backgroundColor:'#F0F0F0', position:'relative', justifyContent:'center' }}> 
-
-        <Text style={{color:'#494c4e', fontSize:20,  fontFamily:'roboto', marginBottom:60, textAlign:'center'}}>Adicionar Casas</Text> 
-        <View style={{flexDirection:'row', justifyContent:'space-around', paddingHorizontal:60 }}>
+  handleChange = (field, value) => {
+    this.setState({ [field]: value });
+  };
+  
+  render() {
+    const { anunciante, cidade, descricao, imovel, localizacao, tipoImovel, valor } = this.state;
+    
+    return (
+      <View style={styles.formulario}>
+        <Text style={styles.texto}>Formulário de Cadastro</Text>
+        <TextInput
+          placeholder={'Anunciante'}
+          style={styles.input}
+          value={anunciante}
+          onChangeText={(text) => this.handleChange('anunciante', text)}
+        />
+        <TextInput
+          placeholder={'Cidade'}
+          style={styles.input}
+          value={cidade}
+          onChangeText={(text) => this.handleChange('cidade', text)}
+        />
+        <TextInput
+          placeholder={'Descrição'}
+          style={styles.input}
+          value={descricao}
+          onChangeText={(text) => this.handleChange('descricao', text)}
+        />
+        <TextInput
+          placeholder={'Link Imagem'}
+          style={styles.input}
+          value={imovel}
+          onChangeText={(text) => this.handleChange('imovel', text)}
+        />
+        <TextInput
+          placeholder={'Localização'}
+          style={styles.input}
+          value={localizacao}
+          onChangeText={(text) => this.handleChange('localizacao', text)}
+        />
+        <TextInput
+          placeholder={'Tipo de Imóvel'}
+          style={styles.input}
+          value={tipoImovel}
+          onChangeText={(text) => this.handleChange('tipoImovel', text)}
+        />
+        <TextInput
+          placeholder={'Valor'}
+          style={styles.input}
+          value={valor}
+          onChangeText={(text) => this.handleChange('valor', text)}
+        />
+        <Button title="Criar" style={styles.botao} onPress={this.criarItem} />
+        
         <Button 
-color="#F7A156"
-          title="Alugar" 
-
-          onPress={() => this.props.navigation.push('AddItemsScreen')} 
-
-        /> 
-
-        <Button 
-color="#F7A156"
+          color="#F7A156"
           title="Home" 
-
           onPress={() => this.props.navigation.navigate('Screen')} 
-
         /> 
+      </View>
+    );
+  }
+}
 
-        <Button 
-color="#F7A156"
-          title="Voltar" 
-
-          onPress={() => this.props.navigation.goBack()} 
-
-        /> 
-</View>
-      </View> 
-
-    ); 
-
-  } 
-
-} 
-
- 
- 
-
-export default AddItemsScreen; 
+const styles = StyleSheet.create({
+  input: {
+    width: '70%',
+    borderColor: 'gray',
+    borderWidth: 1,
+    height: '8%',
+    justifyContent: 'center',
+    borderRadius: 5
+  },
+  formulario: {
+    flex: 1,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    flexDirection: 'column',
+    width: '100%',
+    padding: '5%'
+  },
+  texto: {
+    fontSize: 25,
+  }
+});
